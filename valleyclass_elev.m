@@ -1,29 +1,26 @@
 function DV = valleyclass_elev(DEM,S,FD,elevthreshold,plotnum)
 %% valleyclass function for DEM, Stream network, and thresholds
-%   A function to use a stream network, the DEM elevation, and  a threshold
-%   elevation to create a gridobj of valley class, where 1 is in a valley
-%   and 0 is out.
+% 
 %
 % Syntax
 %
-%     DV = valleyclass_elev(DEM,S,FD,elevthreshold,plotnum)
+%     DV = velleyclass_elev(DEM,S,FD,elevthreshold,plotnum)
 %
 % Description
 %
-%   valleyclass_elev creates a Valley class grid (DV) where in valley is 1 and out valley is 0
+%   valleyclass_elev creates a Valley class grid (DV) where in valley is 1 and outvalley is 0
 %   uses the topotoolbox function vertdistance to stream to get elevation
 %   above stream and the elevthreshold set to pick valley pixels that are
-%   within an elevation from the stream. Note that vertdistance to stream
-%   is computed along flow paths, not the nearest euclidean distance
+%   within an elevation from the stream.
 % 
 % Input arguments
 %
 %     DEM     class GRIDobj elevation file, this code fills sinks
 %     S       class STREAMobj created from the DEM input
 %     FD      class FLOWobj  created from the DEM input
-%     elevthreshold: number set number for the cutoff of valley and
+%     elevthreshold number set number for the cutoff of valley and
 %               outvalley pixels, should be in meters
-%     plotnum:  number if 1 makes plots if 0 no plots
+%     plotnum   number if 1 makes plots if 0 no plots
 %
 % Output arguments
 %
@@ -35,6 +32,7 @@ function DV = valleyclass_elev(DEM,S,FD,elevthreshold,plotnum)
 %     
 % Author: paul morgan
 % Date: first iteration 1/20/23
+% 3/12/24 remove use of demf 
 
 %input DEM, streams, Thresholds
 % DEM=DEM
@@ -48,7 +46,7 @@ disp("Setting up the DEM")
 % but right now, def not a function
 %DEMo = GRIDobj('/Users/pmorgan/UW/DATA/DEM/OR/testsquare2_m_rp.tif');
 %DEM=DEMo;
-DEMf = fillsinks(DEM);
+%DEMf = fillsinks(DEM);
 %GD = gradient8(DEMf,'degree');
 
 
@@ -73,7 +71,9 @@ DEMf = fillsinks(DEM);
 
 %% step one, get the elevation above the streams, using the function
 disp('finding DZ')
-DZ = vertdistance2stream(FD,S,DEMf);
+%DZ = vertdistance2stream(FD,S,DEMf);
+DZ = vertdistance2stream(FD,S,DEM);
+
 
 %% try to do the above with slope
 % so Dslope is the grid object representing the slope value above the slope
@@ -104,7 +104,7 @@ DV.Z(S.IXgrid) = 2; % set each stream cell equal t
 
 
 
-%% try to do the if statement
+%% main if statement for valley classes
 
 ix = FD.ix; % (givers)  not sure what this is
 ixc = FD.ixc; %(recievers) again not sure what this is, some type of edge attribute 
@@ -189,6 +189,7 @@ else
 end %end plotnum if statement
 
 end % end function
+
 
 
 
